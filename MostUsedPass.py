@@ -1,6 +1,4 @@
-import Node
-import linkedList
-
+# Node class
 class Node(object):
     password = ""
     count = -1
@@ -11,129 +9,149 @@ class Node(object):
         self.count = count
         self.next = next
 
-
 # Linked list class
 class LinkedList:
     def __init__(self):
         self.head = None
 
 
-# Reading the passwrds.txt file 
-def read_file(passwords):
-
-    with open('passwords.txt', 'r') as f:
-        f_contents = f.read()
-        print(f_contents)
-
-# Length of the list 
-def length_linked_list(passwords):
-    temp = list.head
-    count = 0
-
-    while temp:
-        count += 1
-        temp = temp.next
-    return count
-
-# Printing the top 20 passwords 
-def print_list(passwords):
-
-    node = passwords.head
-
-    for i in range(20):
-        print(node.item)
-        node = node.next
-
-# Time complexity of sorting O(nlogn)
-def mergeSort(head):
-    
-    if(head.val == -1):
-        return    
-    if(head is None or head.next is None):
-        return head
-    
-    # Partitioning the list to half 
-    list1, list2 = divideList(head)
-    # Sorting individual portion of the list 
-    list1 = mergeSort(list1)
-    list2 = mergeSort(list2)
-    head = merge(list1, list2)
-    return head
-
- # Helper method for the merge sort divides the list in half    
-def divideList(head):
-    slow = head
-    fast = head
-    
-    if fast and fast.val != -1:
-        fast = fast.next
-    while fast and fast.val != -1:
-        fast = fast.next
-        if fast:
-            fast = fast.next
-            slow = slow.next
-    mid = slow.next
-    slow.next = None
-    return head, mid
-
-# Merging two lists 
-def merge(l1, l2):     
-    temp = None
-    if(l1 is None):        
-        return l2
-    if(l2 is None):
-         return l1
-     
-    if(l1.val <= l2.val):
-        temp = l1
-        temp.next = merge(l1.next, l2)
-    else:
-         temp = l2
-         temp.next = merge(l1, l2.next)
-    return temp
-
-
-# Main method in charge of sending the linked list as a parameter to sort list.
-def main():
-
-    passwords = linkedList()
-    read_file(passwords)
-    length = length_linked_list(passwords)
-    mergeSort(passwords, 0, length)
-    print_list(passwords)
-
-main()
-############################################################################################################    
-# Class in which handles the dictionary 
-   
-import Node
-import linkedlist
+# This method reads the file where the passwords are stored
+def read_passwords_ll(password_list):
+    with open('file.txt', 'r') as infile:
+        for line in infile:
+            line = line.split()
+            if len(line) > 1:
+                add_password_ll(password_list, line[1])
 
 # This method reads the file where passwords are stored
-def read_file(password_list, pass_dict):
-    with open('passwords.txt', 'r') as infile:
+def read_passwords_dict(password_list, my_dict):
+    with open('file.txt', 'r') as infile:
         for line in infile:
             credentials = line.split()
             if len(credentials) > 1:
-                appending(credentials[1], pass_dict)
+                add_password_dict(credentials[1], my_dict)
 
 
-# Adding the passwords to dictionary
-def appending(password, pass_dict):
-    if password in pass_dict:
-        pass_dict[password] += 1
+# This method adds all passwords to a linked list
+def add_password_ll(password_list, password):
+    node = password_list.head
+    while node is not None:
+        if node.password == password:
+            node.count += 1
+            return
+        node = node.next
+    password_list.head = Node(password, 1, password_list.head)
+
+
+# This method adds every password to a dictionary
+def add_password_dict(password, my_dict):
+    if password in my_dict:
+        my_dict[password] += 1
     else:
-        pass_dict[password] = 1
+        my_dict[password] = 1
+   
 
 
-#  Iserting all components into a linked list
-def into_linkedlist(password_list, pass_dict):
-    for password in pass_dict:
-        node = Node(password, pass_dict[password], password_list.head)
+# This method gets the size of the linked list
+def get_list_size(password_list):
+    node = password_list.head
+    linked_list_size = 0
+    while node is not None:
+        linked_list_size += 1
+        node = node.next
+    return linked_list_size
+
+
+# O(n^2)
+# This method runs the bubble sort algorithm
+def bubble_sort(password_list, linked_list_size):
+    for i in range(linked_list_size):
+        cur_node = password_list.head
+        nxt_node = cur_node.next
+
+        for j in range(linked_list_size - 1):
+            if cur_node.count < nxt_node.count:
+                tmp_count = cur_node.count
+                cur_node.count = nxt_node.count
+                nxt_node.count = tmp_count
+                tmp_pass = cur_node.password
+                cur_node.password = nxt_node.password
+                nxt_node.password = tmp_pass
+
+            cur_node = nxt_node
+            nxt_node = nxt_node.next
+
+"""
+def mergeSort(x):
+    if x is None or x.next is None:
+        return x
+
+    leftHalf, rightHalf = splitTheList(x)
+
+    left = mergeSort(leftHalf)
+    right = mergeSort(rightHalf)
+
+    return mergeTheLists(left, right)
+
+#Splits the linked list into two
+def splitTheList(x):
+    if x == None or x.next == None:
+        leftHalf = x
+        rightHalf = None
+
+        return leftHalf, rightHalf
+
+    else:
+        mid = x
+        head = x.next
+
+        while head != None:
+            head = head.next
+
+            if head != None:
+                head = head.next
+                midPointer = mid.next
+
+    leftHalf = x
+    rightHalf = mid.next
+    midPointer.next = None
+
+    return leftHalf, rightHalf
+
+#Merges the two list once it is sorted
+def mergeTheLists(leftHalf, rightHalf):
+    head = Node(None)
+    curr = head
+
+    while leftHalf and rightHalf:
+        if leftHalf.count < rightHalf.count:
+            curr.next = leftHalf
+            leftHalf = leftHalf.next
+
+        else:
+            curr.next = rightHalf
+            rightHalf = rightHalf.next
+
+        curr = curr.next
+
+    if leftHalf == None:
+        curr.next = rightHalf
+
+    elif rightHalf == None:
+        curr.next = leftHalf
+
+    return head.next
+"""
+
+# This method inserts all components into a linked list
+def into_linked_list(password_list, my_dict):
+    for password in my_dict:
+        node = Node(password, my_dict[password], password_list.head)
         password_list.head = node
 
 
-# Printing passwords
+
+# This method displays the passwords
 def print_list(password_list):
     node = password_list.head
     limit = 0
@@ -142,64 +160,26 @@ def print_list(password_list):
         node = node.next
         limit += 1
 
-# Time complexity of sorting O(nlogn)
-def mergeSort(head):
-    
-    if(head.val == -1):
-        return    
-    if(head is None or head.next is None):
-        return head
-    
-    # Partitioning the list to half 
-    list1, list2 = divideList(head)
-    # Sorting individual portion of the list 
-    list1 = mergeSort(list1)
-    list2 = mergeSort(list2)
-    head = merge(list1, list2)
-    return head
-
- # Helper method for the merge sort divides the list in half    
-def divideList(head):
-    slow = head
-    fast = head
-    
-    if fast and fast.val != -1:
-        fast = fast.next
-    while fast and fast.val != -1:
-        fast = fast.next
-        if fast:
-            fast = fast.next
-            slow = slow.next
-    mid = slow.next
-    slow.next = None
-    return head, mid
-
-# Merging two lists 
-def merge(l1, l2):     
-    temp = None
-    if(l1 is None):        
-        return l2
-    if(l2 is None):
-         return l1
-     
-    if(l1.val <= l2.val):
-        temp = l1
-        temp.next = merge(l1.next, l2)
-    else:
-         temp = l2
-         temp.next = merge(l1, l2.next)
-    return temp
-
-
 # Main method
 def main():
-    linked_list_size = 0
-    pass_dict = {}
+
+    print(" Solution A -- Linked List ")
     password_list = LinkedList()
-    read_file(password_list, pass_dict)
-    into_linkedlist(password_list, pass_dict)
-    linked_list_size = len(pass_dict)
-    mergeSort(passwords, 0, length)
+    read_passwords_ll(password_list)
+    linked_list_size = get_list_size(password_list)
+    bubble_sort(password_list, linked_list_size)
+    #merge(linked_list)
+    print_list(password_list)
+    print("List size:", linked_list_size)
+
+    print(" Solution B -- Dictionary ")
+    linked_list_size = 0
+    my_dict = {}
+    password_list = LinkedList()
+    read_passwords_dict(password_list, my_dict)
+    into_linked_list(password_list, my_dict)
+    linked_list_size = len(my_dict)
+    bubble_sort(password_list, linked_list_size)
     print_list(password_list)
     print("List size:", linked_list_size)
 
